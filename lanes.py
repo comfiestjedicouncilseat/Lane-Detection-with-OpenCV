@@ -21,6 +21,27 @@ def canny(image):
     return canny
 
 
+# Function for creating a triangle mask for a region of interest
+def region_of_interest(image):
+    # Constants
+    height = image.shape[0]
+    width = image.shape[1]
+
+    # Create the triangle shape, based on dimensions of the image
+    # polygons must be an array, currently an array of one polygon
+    polygons = np.array([
+        [(200, height), (width - 200, height), (600, 250)]
+        ])
+
+    # Create a blank image with the same size as the passed in image
+    mask = np.zeros(image.shape, dtype="uint8")
+
+    # Drawing a triangle on the image with fillPoly, accepts array of polygons
+    cv.fillPoly(mask, polygons, 255)
+
+    return mask
+
+
 # Read an image - will change to video later
 img = cv.imread("test_image.jpg")
 
@@ -31,5 +52,8 @@ lane_img = np.copy(img)
 canny = canny(lane_img)
 cv.imshow("Edges Detected", canny)
 
+# Create the mask for the image
+img_roi = region_of_interest(canny)
+cv.imshow("ROI", img_roi)
 
 cv.waitKey(0)
