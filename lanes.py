@@ -16,10 +16,10 @@ gray = cv.cvtColor(lane_img, cv.COLOR_BGR2GRAY)
 # Kernel size of 5 by 5
 # Deviation of 0
 blur = cv.GaussianBlur(gray, (5, 5), 0)
-cv.imshow("Blur", blur)
 
 # Run canny edge detection on the image
-canny = cv.Canny(blur, 125, 175)
+# Threshold ratio of 1:3, or 50:150
+canny = cv.Canny(blur, 50, 150)
 cv.imshow("Edges Detected", canny)
 
 
