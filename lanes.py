@@ -81,9 +81,6 @@ def average_slope_intercept(image, lines):
     print(right_fit_average, "right")
 
 
-# # Read an image - will change to video later
-# img = cv.imread("test_image.jpg")
-
 # Capture a video
 capture = cv.VideoCapture("test2.mp4")
 
@@ -108,7 +105,7 @@ while True:
     # minLineLength: lines less than 40 pixels are rejected
     # maxLineGap: max num of pixels in a gap, otherwise, connect the lines
     lines = cv.HoughLinesP(cropped_img, 2, np.pi/180, 100, np.array([]),
-                        minLineLength=40, maxLineGap=5)
+                           minLineLength=40, maxLineGap=5)
 
     #
     averaged_lines = average_slope_intercept(lane_img, lines)
@@ -126,43 +123,5 @@ while True:
     if (cv.waitKey(1) & 0xFF == ord("q")):
         break
 
-
 capture.release()
 cv.destroyAllWindows()
-
-
-
-
-
-# # Creating a copy of the original image for modification
-# lane_img = np.copy(img)
-
-# # Canny the image
-# canny_img = canny(lane_img)
-
-# # Create the mask for the image
-# cropped_img = region_of_interest(canny_img)
-
-# # Creating the Hough Lines
-# # 2 for pixel length (Rho), pi/180 for 1 degree (Radians)
-# # Threshold: min num of votes needed to become a line (100 in this case)
-# # Also need to pass in an empty array
-# # minLineLength: lines less than 40 pixels are rejected
-# # maxLineGap: max num of pixels in a gap, otherwise, connect the lines
-# lines = cv.HoughLinesP(cropped_img, 2, np.pi/180, 100, np.array([]),
-#                        minLineLength=40, maxLineGap=5)
-
-# #
-# averaged_lines = average_slope_intercept(lane_img, lines)
-
-# # Create a blank image with the Hough lines drawn
-# line_img = display_lines(lane_img, lines)
-
-# # Overlay the image with lines, with the original image
-# result = cv.addWeighted(lane_img, 0.8, line_img, 1, 1)
-# # result = cv.bitwise_or(lane_img, line_img)
-
-# # Show the image
-# cv.imshow("region", result)
-
-# cv.waitKey(0)
