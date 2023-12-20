@@ -63,35 +63,106 @@ def display_lines(image, lines):
     return line_image
 
 
-# Read an image - will change to video later
-img = cv.imread("test_image.jpg")
+def average_slope_intercept(image, lines):
+    left_fit = []
+    right_fit = []
+    for line in lines:
+        x1, y1, x2, y2 = line.reshape(4)
+        parameters = np.polyfit((x1, x2), (y1, y2), 1)
+        slope = parameters[0]
+        intercept = parameters[1]
+        if slope < 0:
+            left_fit.append((slope, intercept))
+        else:
+            right_fit.append((slope, intercept))
+    left_fit_average = np.average(left_fit, axis=0)
+    right_fit_average = np.average(right_fit, axis=0)
+    print(left_fit_average, "left")
+    print(right_fit_average, "right")
 
-# Creating a copy of the original image for modification
-lane_img = np.copy(img)
 
-# Canny the image
-canny = canny(lane_img)
+# # Read an image - will change to video later
+# img = cv.imread("test_image.jpg")
 
-# Create the mask for the image
-cropped_img = region_of_interest(canny)
+# Capture a video
+capture = cv.VideoCapture("test2.mp4")
 
-# Creating the Hough Lines
-# 2 for pixel length (Rho), pi/180 for 1 degree (Radians)
-# Threshold: min num of votes needed to become a line (100 in this case)
-# Also need to pass in an empty array
-# minLineLength: lines less than 40 pixels are rejected
-# maxLineGap: max num of pixels in a gap, otherwise, connect the lines
-lines = cv.HoughLinesP(cropped_img, 2, np.pi/180, 100, np.array([]),
-                       minLineLength=40, maxLineGap=5)
+while True:
+    isTrue, frame = capture.read()
+    if not isTrue:
+        break
 
-# Create a blank image with the Hough lines drawn
-line_img = display_lines(lane_img, lines)
+    # Creating a copy of the original image for modification
+    lane_img = np.copy(frame)
 
-# Overlay the image with lines, with the original image
-result = cv.addWeighted(lane_img, 0.8, line_img, 1, 1)
-# result = cv.bitwise_or(lane_img, line_img)
+    # Canny the image
+    canny_img = canny(lane_img)
 
-# Show the image
-cv.imshow("region", result)
+    # Create the mask for the image
+    cropped_img = region_of_interest(canny_img)
 
-cv.waitKey(0)
+    # Creating the Hough Lines
+    # 2 for pixel length (Rho), pi/180 for 1 degree (Radians)
+    # Threshold: min num of votes needed to become a line (100 in this case)
+    # Also need to pass in an empty array
+    # minLineLength: lines less than 40 pixels are rejected
+    # maxLineGap: max num of pixels in a gap, otherwise, connect the lines
+    lines = cv.HoughLinesP(cropped_img, 2, np.pi/180, 100, np.array([]),
+                        minLineLength=40, maxLineGap=5)
+
+    #
+    averaged_lines = average_slope_intercept(lane_img, lines)
+
+    # Create a blank image with the Hough lines drawn
+    line_img = display_lines(lane_img, lines)
+
+    # Overlay the image with lines, with the original image
+    result = cv.addWeighted(lane_img, 0.8, line_img, 1, 1)
+    # result = cv.bitwise_or(lane_img, line_img)
+
+    # Show the image
+    cv.imshow("region", result)
+
+    if (cv.waitKey(1) & 0xFF == ord("q")):
+        break
+
+
+capture.release()
+cv.destroyAllWindows()
+
+
+
+
+
+# # Creating a copy of the original image for modification
+# lane_img = np.copy(img)
+
+# # Canny the image
+# canny_img = canny(lane_img)
+
+# # Create the mask for the image
+# cropped_img = region_of_interest(canny_img)
+
+# # Creating the Hough Lines
+# # 2 for pixel length (Rho), pi/180 for 1 degree (Radians)
+# # Threshold: min num of votes needed to become a line (100 in this case)
+# # Also need to pass in an empty array
+# # minLineLength: lines less than 40 pixels are rejected
+# # maxLineGap: max num of pixels in a gap, otherwise, connect the lines
+# lines = cv.HoughLinesP(cropped_img, 2, np.pi/180, 100, np.array([]),
+#                        minLineLength=40, maxLineGap=5)
+
+# #
+# averaged_lines = average_slope_intercept(lane_img, lines)
+
+# # Create a blank image with the Hough lines drawn
+# line_img = display_lines(lane_img, lines)
+
+# # Overlay the image with lines, with the original image
+# result = cv.addWeighted(lane_img, 0.8, line_img, 1, 1)
+# # result = cv.bitwise_or(lane_img, line_img)
+
+# # Show the image
+# cv.imshow("region", result)
+
+# cv.waitKey(0)
